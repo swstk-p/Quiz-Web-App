@@ -1,0 +1,78 @@
+{% load static %}
+
+<div class="offcanvas offcanvas-start px-0 bg-dark align-items-center" tabindex="-1" id="sidebar" aria-labelledby="sidebar" data-bs-scroll="true">
+  <div class="offcanvas-body d-flex justify-content-center align-items-center container-fluid px-4">
+      <ul class="navbar-nav d-flex align-items center justify-content-center mx-0 w-100">
+          <li class="my-4"><a class="my-auto navbar-brand h1 side-link link-light nav-link rounded" href="{% url 'quiz:standard' %}"><h1 class="d-flex justify-content-center p-2 text-center" style="word-break: break-word !important; white-space: normal !important;">Standard</h1></a></li>
+          <li class="my-4"><a class="my-auto navbar-brand h1 side-link link-light nav-link rounded" href="{% url 'quiz:timed' %}"><h1 class="d-flex justify-content-center p-2 text-center" style="word-break: break-word !important; white-space: normal !important;">Timed</h1></a></li>
+          <li class="my-4"><a class="my-auto navbar-brand h1 side-link link-light nav-link rounded" href="{% url 'quiz:endless' %}"><h1 class="d-flex justify-content-center p-2 text-center" style="word-break: break-word !important; white-space: normal !important;">Endless</h1></a></li>
+          <li class="my-4"><a class="my-auto navbar-brand h1 side-link link-light nav-link rounded" href="{% url 'quiz:aggregate' %}"><h1 class="d-flex justify-content-center p-2 text-center" style="word-break: break-word !important; white-space: normal !important;">Aggregate</h1></a></li>
+          <li class="my-4"><a class="my-auto navbar-brand h1 side-link link-light nav-link rounded" href="{% url 'quiz:customs' %}"><h1 class="d-flex justify-content-center p-2 text-center" style="word-break: break-word !important; white-space: normal !important;">Custom quizzes</h1></a></li>
+      </ul>
+  </div>
+</div>
+
+{#nav container#}
+{#all contents within nav#}
+<nav class="navbar col-md navbar-light navbar-expand-sm bg-light mt-2 col-md-12 vh-20 container-fluid fixed-top rounded">
+{#all contents within nav#}
+    <div class="container d-flex justify-content-between float-center">
+{#sidebar nav button#}
+    <div class="mt-0 d-flex align-items-center nav-link py-0 px-2">
+        <button type="button" class="btn btn-sm custom-btn2 side-link btn-dark text-light" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+            Quizzes <svg xmlns="http://www.w3.org/2000/svg" width="17" height="15" fill="currentColor" class="bi bi-caret-left-fill p-0" viewBox="0 1 16 16">
+                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                    </svg>
+        </button>
+    </div>
+{#logo and title container#}
+        <div class="container col-2 d-flex p-0 pe-1 justify-content-end mx-0" style="max-height: 50px;">
+            <img class="img-fluid" src="{% static "images/logo.png" %}" style="width: 65px; height: 43px;">
+        </div>
+{#toggle button#}
+{# remaining container#}
+                <div class="container d-flex justify-content-end px-0 p-0 col-10 mx-0" style="max-width: 250px;">
+                    <ul class="navbar-nav float-end p-0 ms-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link py-0" href="{% url 'quiz:index' %}">
+                                <button type="button" class="btn btn-sm custom-btn btn-outline-dark">
+                                    Home
+                                </button>
+                            </a>
+                        </li>
+
+                        <li class="nav-item active">
+                                <a class="nav-link py-0" href="{% url 'quiz:record' %}">
+                                    <button type="button" class="btn btn-sm custom-btn btn-outline-dark">
+                                        Stats
+                                    </button>
+                                </a>
+                        </li>
+
+                        <li class="nav-item active align-items-center">
+                            {% if not request.user.is_authenticated %}
+                                <a class="nav-link py-0" href="{% url 'quiz:login' %}">
+                                    <button type="button" class="btn btn-sm custom-btn btn-outline-dark">
+                                        Login
+                                    </button>
+                                </a>
+                            {% else %}
+                                <div class="dropdown mt-0 align-items-center nav-link py-0" style="position: relative; z-index: 1;">
+                                    <button class="btn dropdown-toggle btn-sm my-0 custom-btn btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        {{ request.user.get_short_name|truncatechars:5 }}
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li><a class="dropdown-item" href="{% url 'quiz:manage' %}">Manage your quizzes</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'quiz:logout' %}">Log Out</a></li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+    </div>
+</nav>
+
+{% if request.build_absolute_uri == "http://thsqz.com/" or request.build_absolute_ui == "http://127.0.0.1:80/" or request.build_absolute_uri == "http://thsqz.com/create/" or request.build_absolute_ui == "http://127.0.0.1:80/create/" or request.build_absolute_uri == "http://thsqz.com/score/" or request.build_absolute_ui == "http://127.0.0.1:80/score/" or request.build_absolute_uri == "http://thsqz.com/verify/" or request.build_absolute_ui == "http://127.0.0.1:80/verify/" %}
+<hr style="border: 1px solid black; z-index: 0; color:black; opacity: 1; margin-top: 73.7px;" class="container col-12 fixed-top">
+{% endif %}

@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block title %} Edit this quiz {% endblock title %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock includes %}
+
+{% block main %}
+    <div class="container col-10 mt-5 py-5 px-0" xmlns="http://www.w3.org/1999/html">
+        <div class="container text-center align-items-center mt-3">
+            <h3 class="h3 text-center container">{{ title|title }}</h3>
+        </div>
+
+            <form method="POST" id="crudForm">
+                {% csrf_token %}
+                <table class="table table-hover shadow-sm table-group-divider rounded table-borderless overflow-auto my-0">
+                    <thead class="">
+                        <tr style="height: 60px;" class="align-middle">
+                            <th scope="col" class="px-0 mx-3 text-center col-1"></th>
+                            <th scope="col" class="px-0 mx-3 text-center col-1"></th>
+                            <th scope="col" class="px-0 mx-3 text-center col-8">Question</th>
+                            <th scope="col" class="px-0 mx-3 text-center col-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-wrench-adjustable" viewBox="0 0 16 16">
+                                  <path d="M16 4.5a4.492 4.492 0 0 1-1.703 3.526L13 5l2.959-1.11c.027.2.041.403.041.61Z"/>
+                                  <path d="M11.5 9c.653 0 1.273-.139 1.833-.39L12 5.5 11 3l3.826-1.53A4.5 4.5 0 0 0 7.29 6.092l-6.116 5.096a2.583 2.583 0 1 0 3.638 3.638L9.908 8.71A4.49 4.49 0 0 0 11.5 9Zm-1.292-4.361-.596.893.809-.27a.25.25 0 0 1 .287.377l-.596.893.809-.27.158.475-1.5.5a.25.25 0 0 1-.287-.376l.596-.893-.809.27a.25.25 0 0 1-.287-.377l.596-.893-.809.27-.158-.475 1.5-.5a.25.25 0 0 1 .287.376ZM3 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+                                </svg>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="container px-0 overflow-auto my-0" style="max-height: 400px;">
+                    <table class="table table-hover shadow-sm rounded table-borderless overflow-auto my-0" id="table">
+                        <tbody class="">
+
+                            {% if empty %}
+                                <tr class="align-middle" style="height: 55px;">
+                                    <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center" id="error1"></th>
+                                    <td class="px-0 mx-3 text-center col-1" id="error2"></td>
+                                    <td class="px-0 mx-3 text-center col-8" id="error3">There are currently no questions in this quiz</td>
+                                    <td class="px-0 mx-3 text-center col-2" id="error4"></td>
+                                </tr>
+                            {% else %}
+                                    {% for question in questions %}
+                                        <tr class="align-middle" style="height: 55px;">
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center">{{ forloop.counter }}</th>
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center"></th>
+                                            <td class="px-0 text-center col-8" id="title{{ forloop.counter }}">
+                                                <span><strong>Question: </strong></span><span class="px-0 text-center my-0" id="quizTitle{{ forloop.counter }}">{{ question.0.question.question }}</span>
+                                            </td>
+{#                                            <td class="px-0 text-center col-6" id="count{{ forloop.counter }}">{{ question.question.answer.answer }}</td>#}
+                                            <td class="px-0 text-center col-2">
+                                                <a class="mx-3 btn btn-sm btn-outline-dark" data-toggle="tooltip" title="View question" data-bs-placement="top" data-bs-toggle="collapse" href="#details{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="details{{ forloop.counter }}" id="view_quiz{{ forloop.counter }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 19">
+                                                      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                                      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="" class="mx-3 btn btn-sm btn-outline-dark" data-toggle="tooltip" title="Delete question" data-bs-placement="top" id="delete_quiz,{{ question.0.id }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 19">
+                                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr class="collapse align-middle text-center" id="details{{ forloop.counter }}" style="height: 55px;">
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center"></th>
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center"></th>
+                                            <td class="px-0 col-8">
+                                                <div class="py-2" id="ansDiv{{ forloop.counter }}">
+                                                    <span><strong>Answer:</strong> </span><span id="answer{{ forloop.counter }}">{{ question.0.question.answer.answer }}</span><br>
+                                                    {% with question.1 as options %}
+                                                    <span><strong>Option 1:</strong> </span><span id="opt1{{ forloop.counter }}">{{ options.0 }}</span><br>
+                                                    <span><strong>Option 2:</strong> </span><span id="opt2{{ forloop.counter }}">{{ options.1 }}</span><br>
+                                                    <span><strong>Option 3:</strong> </span><span id="opt3{{ forloop.counter }}">{{ options.2 }}</span><br>
+                                                    {% endwith %}
+                                                    <span><strong>Category:</strong> </span><span id="cat{{ forloop.counter }}">{{ question.0.question.category.category }}</span><br>
+                                                    <span><strong>Difficulty:</strong> </span><span id="difficulty{{ forloop.counter }}">{{ question.0.question.difficulty.level }}</span><br>
+                                                    <span><strong>Asked:</strong> </span><span id="asked{{ forloop.counter }}">{{ question.0.question.asked }} times</span><br>
+                                                    <span><strong>Answered:</strong> </span><span id="answered={{ forloop.counter }}">{{ question.0.question.answered }} times</span><br>
+                                                </div>
+                                            </td>
+                                            <td class="px-0 text-center col-2"></td>
+                                        </tr>
+
+{#                                        <input type="hidden" id="question_obj{{ forloop.counter }}" value={{ question }}>#}
+                                    {% endfor %}
+                            {% endif %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+                <input type="submit" hidden>
+            </form>
+
+                <table class="table table-hover shadow-sm rounded table-borderless overflow-auto mt-0">
+                    <tfoot class="">
+                        <tr class="align-middle" style="height: 60px;">
+                            <th scope="row" class="px-0 mx-3 text-center col-1"></th>
+                            <td class="px-0 mx-3 text-center col-2"></td>
+                            <td class="px-0 mx-3 text-center col-6">
+                                <a href="{% url 'quiz:create' %}" class="btn btn-sm btn-dark text-light addbtn" id="addquestion">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 19">
+                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                                    </svg> Add a new question
+                                </a>
+                            </td>
+                            <td class="px-0 mx-3 text-center col-3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <input type="hidden" value="{{ title }}" name="title">
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script defer>
+
+    function calculateIndex(num){
+        index = num;
+                all_quizzes = {{ questions|length }};
+                if(index===1){
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+                }
+                else if(index===2 && shared.deleted.length===(all_quizzes-2)){
+                    index = num;
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                    }
+                    if(index!==2){
+                        index++;
+                    }
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+                }
+                else if(shared.deleted.includes(num)){
+                    index = num;
+
+                    if(shared.deleted===[1]){
+                        index+=1;
+                    }
+                    else if(shared.deleted === [1,2] || shared.deleted === [2,1]){
+                        index+=2;
+                    }
+                    else{
+
+                        for(i of shared.deleted){
+                            if(i < index){
+                                index++;
+                            }
+                        }
+
+                        while((document.getElementById("quizTitle"+index.toString())==null || document.getElementById("quizTitle"+(index-num).toString())!==null) && (shared.deleted.includes(index-num))){
+                            index++;
+                        }
+                    }
+
+                }
+                else{
+                    index = num;
+                    if(index < Math.min(...shared.deleted)){
+                        index = num;
+                    }
+                    else if(index > Math.max(...shared.deleted)){
+                        index+=shared.deleted.length;
+                    }
+                    else{
+                        for(i of shared.deleted){
+                            if(i < index){
+                                index++;
+                            }
+                        }
+
+                        while(document.getElementById("quizTitle"+index.toString())==null || ((shared.deleted.includes(index-num)) && document.getElementById("quizTitle"+(index-num).toString())!==null)){
+                            index++;
+                        }
+                    }
+                }
+                for(i=1; i<num; i++){
+                if(calculateIndex(i)===index){
+                    index++;
+                }
+            }
+                 while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+
+            return index;
+    }
+
+        const form = document.getElementById("crudForm");
+
+        var shared={
+            originalQuizTitle: null,
+            oldTitle: null,
+            newTitle: null,
+            deleted:[],
+        }
+
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+
+            if(document.getElementById('newTitle')!=null){
+                newTitle = document.getElementById('newTitle');
+                shared.originalQuizTitle.innerHTML = newTitle.value;
+                shared.newTitle = newTitle.value;
+                newTitle.parentNode.replaceChild(shared.originalQuizTitle, newTitle);
+                newTitle.type = 'hidden';
+                newTitle.remove();
+
+
+
+             }
+            formdata = new FormData(form);
+                formdata.append('title', "{{ title }}");
+
+            if(shared.oldTitle!=null){
+                formdata.append('oldTitle', shared.oldTitle);
+                formdata.append('newTitle', shared.newTitle);
+                shared.oldTitle = null;
+                shared.newTitle = null;
+            }
+
+            fetch('{% url 'quiz:edit' title=title %}', {
+                method: "POST",
+                body: formdata,
+            })
+                .then(res => res.json())
+                .then(data => {})
+                .catch(err => {})
+        })
+
+        copied_list = [];
+
+        {% for question in questions %}
+            const view_quiz{{ forloop.counter }} = document.getElementById("view_quiz{{ forloop.counter }}");
+            const delete_quiz{{ forloop.counter }} = document.getElementById("delete_quiz,{{ question.0.id  }}");
+
+
+
+            delete_quiz{{ forloop.counter }}.addEventListener('click', function(event){
+                event.preventDefault();
+
+                const isDelete = document.createElement('input');
+                isDelete.type="hidden";
+                isDelete.name="isDelete";
+                isDelete.value=delete_quiz{{ forloop.counter }}.id.split(",")[1];
+                shared.deleted.push(parseInt(view_quiz{{ forloop.counter }}.id.slice(9)));
+
+                form.appendChild(isDelete);
+
+                const submitEvent = new Event('submit');
+                form.dispatchEvent(submitEvent);
+
+
+                {% setvar questions|length as questions_length %}
+
+                {{ questions_length }}
+
+                {% with forloop.counter as start %}
+                        {% for question in questions %}
+                            {% if forloop.counter >= start and not forloop.counter >= questions_length %}
+                                copied_list.push({{ forloop.counter }})
+                                copied_list=copied_list.sort(function(a,b) {return a-b});
+                                offset = copied_list.indexOf({{ forloop.counter }}) + 2;
+                                copyTo = ({{ forloop.counter }} - offset + copied_list.length) * 2;
+                                if(!(copyTo >= (document.getElementById('table').rows.length - 2))){
+                                    copyFrom = copyTo+2;
+
+                                    to = document.getElementById('table').rows[copyTo].cells;
+                                    from = document.getElementById('table').rows[copyFrom].cells;
+                                    toLinks = to[3].getElementsByTagName("a");
+                                    fromLinks = from[3].getElementsByTagName("a");
+
+                                    to[1].innerHTML = from[1].innerHTML;
+                                    to[2].innerHTML = from[2].innerHTML;
+
+
+                                    for(i=0; i<toLinks.length; i++) {
+                                        if (!(fromLinks.length < 1)) {
+
+                                            toLinks[i].id = fromLinks[i].id;
+                                            to[1].id = from[1].id;
+                                            to[2].id = from[2].id;
+
+                                        }
+                                    }
+
+                                    ansRowTo = document.getElementById('table').rows[copyTo+1].cells;
+                                    ansRowFrom = document.getElementById('table').rows[copyFrom + 1].cells;
+
+
+                                    ansRowTo[2].innerHTML = ansRowFrom[2].innerHTML;
+
+                                }
+                            {% endif %}
+                        {% endfor %}
+                {% endwith %}
+                document.getElementById('table').deleteRow(document.getElementById('table').rows.length - 1);
+                document.getElementById('table').deleteRow(document.getElementById('table').rows.length - 1);
+                copied_list.length = 0;
+
+                if(document.getElementById('table').rows.length<1){
+                    table = document.getElementById('table');
+                    row = table.insertRow(0);
+                    row.classList.add("align-middle", "table-hover");
+                    row.style.height = "55px";
+
+                    c1 = row.insertCell(0);
+                    c2 = row.insertCell(1);
+                    c3 = row.insertCell(2);
+                    c4 = row.insertCell(3);
+
+                    c1.classList.add("px-0", "mx-3", "text-center", "col-1", "align-items-center");
+                    c2.classList.add("px-0", "mx-3", "text-center", "col-1");
+                    c3.classList.add("px-0", "mx-3", "text-center", "col-8");
+                    c4.classList.add("px-0", "mx-3", "text-center", "col-2");
+
+
+                    c1.innerHTML = "";
+                    c2.innerHTML = "";
+                    c3.innerHTML = "There are currently no questions in this quiz";
+                    c4.innerHTML = "";
+
+                }
+            })
+        {% endfor %}
+
+    document.getElementById('addquestion').addEventListener('click', function(event){
+        event.preventDefault();
+
+        const addForm = document.createElement('form');
+        addForm.method='POST';
+        addForm.action=event.target.href;
+
+        const titleInput = document.createElement('input');
+        titleInput.type = 'hidden';
+        titleInput.name = 'passed_title';
+        titleInput.value = "{{ title }}";
+
+        addForm.appendChild(titleInput);
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrftoken;
+        addForm.appendChild(csrfInput);
+
+        const validInput = document.createElement('input');
+        validInput.type = 'hidden';
+        validInput.name = 'falseValid';
+        validInput.value = "valid";
+
+        addForm.appendChild(validInput);
+
+        document.body.appendChild(addForm);
+        addForm.submit();
+
+
+    })
+
+
+    </script>
+{% endblock scripts %}

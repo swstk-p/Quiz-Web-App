@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Index {% endblock %}
+
+{% block includes %}
+    {% include 'nav.html' %}
+{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-contents-between container col-12 bg-light px-0" style="margin-top: 105px; height: 620px;">
+        <div class="col-8 ms-5">
+            <div class="d-flex justify-content-center">
+                <h1 class="mt-5 text-center" style="font-size: 126.6px;">do you know...</h1>
+            </div>
+            <div class="mt-5 rounded mx-4 px-0">
+                <div class="my-5 d-flex shadow shadow-lg align-items-center justify-content-center border border-dark border-3 rounded mx-0 px-3" style="height: 267px">
+                    <ul class="navbar-nav px-5">
+                        <li class="mb-2">
+                            <h5 class="text-center display-6" style="word-break: break-word !important; white-space: normal !important;">...it all?</h5>
+                        </li>
+                        <li class="mt-3">
+                            <p class="text-center" style="word-break: break-word !important; white-space: normal !important;">
+                                An ever increasing collection of questions, each with its own category and difficulty, to test your knowledge through and through.
+                                Add to that your own sets of questions, and see what others have added. A simplicity offered within 10 questions and 4 options.
+                            </p>
+                        </li><li class="mt-3">
+                            <p class="text-center" style="word-break: break-word !important; white-space: normal !important;">
+                                You are invited to try.
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 mx-0 mt-0 d-flex justify-content-center">
+            <h1 class="display-1 text-center m-0 p-0 align-top" style="line-height: 0.73em; font-size: 671.7px; word-break: break-word !important; white-space: normal !important;">?</h1>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+{% endblock %}

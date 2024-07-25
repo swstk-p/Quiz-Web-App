@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock %}
+
+{% block title %} Verify {% endblock %}
+
+{% block main %}
+
+    <div class="container col-8 d-flex border border-1 border-dark rounded shadow shadow-lg justify-content-center p-5", style="margin-top: 190px;">
+    <ul class="navbar-nav">
+        <li class="text-center mb-3 mt-1"><h3 class="display-3 h3 py-3 my-0">
+            {% if token and not correct %}
+                Your verification was invalid.
+            {% else %}
+                Your account is unverified.
+            {% endif %}
+        </h3></li>
+        <li class="text-center mb-3 mt-1"><h6 class="display-6 h1 py-3 my-0" style="font-size: 35px;">A verification link has just been sent to your email.</h6></li>
+        <li class="text-center mb-3 mt-1"><h6 class="display-6 h1 py-3 my-0" style="font-size: 27px;">You can refresh the page to check verification or to resend the link.</h6></li>
+    </ul>
+
+
+    </div>
+
+    {% include 'footer.html' %}
+{% endblock %}

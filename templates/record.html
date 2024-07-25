@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block title %} Manage your quizzes {% endblock title %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock includes %}
+
+{% block main %}
+    <div class="container col-10 mt-5 py-5 px-0">
+        <div class="container text-center align-items-center mt-3 mb-1">
+            <h3 class="h3 text-center container">Your statistics over time</h3>
+        </div>
+
+            <form method="POST" id="crudForm">
+                {% csrf_token %}
+                <table class="table table-sm table-hover shadow-sm table-group-divider rounded table-borderless overflow-auto mt-4 mb-0">
+                    <thead class="">
+                        <tr style="height: 55px; font-size: 14px;" class="align-middle">
+                            <th scope="col" class="px-0 text-center col-sm-1">SN</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Date</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Format</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Total</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Easy</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Medium</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">Hard</th>
+                            <th scope="row" class="px-0 text-center col-sm-1">TD (Easy)</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">TD (Medium)</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">TD (Hard)</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">MAC</th>
+                            <th scope="col" class="px-0 text-center col-sm-1">LAC</th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="container px-0 overflow-auto my-0" style="max-height: 400px; font-size: 12.5px; font-weight: 500;">
+                    <table class="table table-sm table-hover shadow-sm rounded table-borderless overflow-auto my-0" id="table">
+                        <tbody class="">
+                            {% if empty %}
+                                <tr class="align-middle" style="height: 50px;">
+                                    <td scope="col" class="px-0 text-center col-sm-4"></td>
+                                    <td scope="col" class="px-0 text-center col-sm-4">You have not taken any quiz yet!</td>
+                                    <td scope="col" class="px-0 text-center col-sm-4"></td>
+                                </tr>
+                            {% else %}
+                                {% for record in records %}
+                                <tr class="align-middle {% if record.test == best %}table-success{% elif record.test == worst %}table-danger{% endif %}" style="height: 40px;">
+                                    <th scope="row" class="px-0 text-center col-sm-1" id="counter">{{ forloop.counter }}</th>
+                                    <td scope="col" class="px-0 text-center col-sm-1" id="date">{{ record.test.date }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="format">{{ record.test.format.format|title }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="score">
+                                            {{ record.score }}
+                                            {% if record.test.format.format != "endless" and record.test.format.format != "aggregate" %}
+                                                %
+                                            {% endif %}
+                                        </td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="score1">
+                                            {{ record.answered.easy }}
+                                            {% if not record.answered.easy == "N/A" and record.test.format.format != "aggregate" %}
+                                                %
+                                            {% endif %}
+                                        </td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="score2">
+                                            {{ record.answered.medium }}
+                                            {% if not record.answered.medium == "N/A" and record.test.format.format != "aggregate" %}
+                                                %
+                                            {% endif %}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="score3">
+                                            {{ record.answered.hard }}
+                                            {% if not record.answered.hard == "N/A" and record.test.format.format != "aggregate" %}
+                                                %
+                                            {% endif %}
+                                        </td>
+                                        <td scope="row" class="px-0 text-center col-sm-1" id="td1">{{ record.td.easy }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="td2">{{ record.td.medium }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="td3">{{ record.td.hard }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="mac">{{ record.mac }}</td>
+                                        <td scope="col" class="px-0 text-center col-sm-1" id="lac">{{ record.lac }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            <input type="submit" hidden>
+            </form>
+    <table class="table table-hover shadow-sm rounded table-borderless overflow-auto mt-2" style="height: 0;">
+        <caption class="my-0 py-0 ms-5" style="font-size: 11.5px; font-style: italic; font-weight: 500;">TD (Time Difference) = Avg time to answer correctly - Avg time to answer</caption>
+        <caption class="my-0 py-0 ms-5" style="font-size: 11.5px; font-style: italic; font-weight: 500;">LAC = Least Answered Category</caption>
+        <caption class="my-0 py-0 ms-5" style="font-size: 11.5px; font-style: italic; font-weight: 500;">MAC = Most Answered Category</caption>
+        </table>
+    </div>
+{% include 'footer.html' %}
+
+{% endblock main %}
+

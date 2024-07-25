@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %} Login {% endblock %}
+
+{% block main %}
+    <div class="container-fluid d-flex col-12 justify-content-between p-1" style="height: 100vh; width: 100vw!important;">
+
+    <div class="col-6" id="signup div">
+        <div class="container-fluid h-100 d-flex justify-content-center align-items-center" style="background-color: black; color:white;">
+            <h1 class="text-center mx-5" style="word-break: break-word !important; white-space: normal !important;">
+                <a class="px-3 d-flex btn btn-lg btn-outline-light fixed-top justify-content-center align-items-center h-100 done-btn" data-toggle="tooltip" title="Exit this quiz?" data-bs-placement="top" style="width: 100px; height: 53px!important; color: white; margin-top: 33px; margin-left: 50px;" href="{% url 'quiz:index' %}" id="quit">
+                    <h5 class="my-0 mx-1">Home</h5>
+                </a>
+                <p class="mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="257" height="257" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16">
+                      <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5z"/>
+                      <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                </p>
+                <p class="mb-3" style="font-size: 69px;">Not registered yet?</p>
+                <p class="mt-4" style="font-size:33px;"><a href="{% url 'quiz:signup' %}" class="auth-redirect px-5 py-2 rounded" style="color:white; font-size:33px; text-decoration: underline;">You can sign up here!</a></p>
+            </h1>
+        </div>
+    </div>
+    <div class="col-6" id="login div" style="background-color: white; color:black;">
+        <div class="container-fluid d-flex justify-content-center align-items-center h-100" style="background-color: white; color:black;">
+            <ul class="navbar-nav">
+                <li class="my-4">
+                   <div class="container-fluid p-0 d-flex justify-content-center" id="login container">
+                        <form method="POST" id="login form" class="shadow shadow-lg">
+                            {% csrf_token %}
+                            {% if next is not None %}
+                                <input type="hidden" value="{{ next }}" name="next">
+                            {% endif %}
+                            <fieldset class="border border-2 border-dark rounded d-flex align-items-center justify-content-center" style="height:457px; width: 457px;">
+                                    <ul class="navbar-nav d-flex justify-content-center">
+                                        <legend class="text-center mb-5" style="font-size: 27px; line-height: 30px; font-weight: 600; text-transform: uppercase; color:black;">Log In</legend>
+                                        {% for field in form %}
+                                            <l1>
+                                                <div class="form-floating">
+                                                    {{ field }}
+                                                    <label for="{{ field.id }}">{{ field.label }}</label>
+                                                </div>
+                                                <br><br>
+                                            </l1>
+                                        {% endfor %}
+                                        <li class="mt-4 text-center">
+                                            <input type="submit" class="btn btn-outline-dark" value="Submit">
+                                        </li>
+                                    </ul>
+                            </fieldset>
+                        </form>
+                    </div>
+                </li>
+                <li class="my-0 text-center">
+                {% if errors is not None %}
+                    {% for key, error in errors.items %}
+                        {{ error }}
+                    {% endfor %}
+                {% endif %}
+            </li>
+            </ul>
+        </div>
+    </div>
+    </div>
+{% endblock %}

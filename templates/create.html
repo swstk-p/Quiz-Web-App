@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %} Create your quiz {% endblock title %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock includes %}
+
+{% block main %}
+    <div class="container d-flex justify-content-center align-items-center" style="margin-top: 90px; height:650px;">
+    <div class="container col-6 d-flex justify-content-center align-items-center">
+        <form method = "POST" id="customQuiz" class="shadow shadow-lg">
+            {% csrf_token %}
+            <fieldset class="border border-2 border-dark rounded d-flex justify-content-center align-items-center p-5"
+            {% if passed_title is not None %} style="height:597px; width: 597px;" {% endif %}>
+            <ul class="navbar-nav">
+                <li>
+                    <legend class="text-center mb-5" style="font-size: 25px; line-height: 30px; font-weight: 600; text-transform: uppercase; color:black;">
+                    {% if passed_title is None %}
+                        Set quiz title
+                    {% else %}
+                        Set questions for {{ passed_title }}
+                    {% endif %}
+                    </legend>
+                </li>
+                {% for field in form %}
+                    <l1 class="my-2">
+                        {{ field }}
+                    </l1>
+                {% endfor %}
+
+                <input type="hidden" name="hidden" id="id_hidden">
+                <input type="hidden" name="passed_title" id="id_title" value="{{ passed_title }}">
+                <br>
+                {% if duplicates is not None %}
+                    {% for duplicate in duplicates %}
+                        {% if duplicate == "question" %}
+                            <p>This {{ duplicate }} already exists in our database, so it will not be added as a new {{ duplicate }}!</p>
+                        {% elif duplicate == "custom" %}
+                            <p>This question already exists in the current quiz!</p>
+                        {% else %}
+                            <p>This {{ duplicate }} already exists!</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if errors is not None %}
+                    {% for k,v in errors.items %}
+                        <p>{{ k }}</p>
+                        <p>{{ v }}</p>
+                    {% endfor %}
+                {% endif %}
+                <li class="text-center">
+                    <a href="{% url 'quiz:manage' %}" class="btn btn-outline-dark mx-3 done-btn" style="width:75px; background-color: black; color:white;">Done?</a>
+                    <input type="submit" class="btn btn-outline-dark mx-3" name="submit" value="Submit" style="width:75px;">
+                </li>
+            </ul>
+            </fieldset>
+    </form>
+    </div>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script>
+        const category = document.getElementById('id_cat');
+        const form = document.getElementById("customQuiz");
+
+        if(document.getElementById('id_title')!=null){
+            document.getElementById('id_title').pattern = "^\\S+$";
+            document.getElementById('id_title').title = "Please enter a title without an space";
+        }
+
+        form.addEventListener('submit', function(){
+            if(category.disabled===true) {
+                hidden = document.createElement('input');
+                value = document.getElementById('id_hidden').value;
+                hidden.type = 'hidden';
+                hidden.name = 'hidden';
+                hidden.value = value;
+                document.getElementById('id_hidden').value = 'custom';
+
+                form.appendChild(hidden);
+            }
+        })
+
+
+        category.addEventListener('change', function(){
+            const selectedIndex = category.selectedIndex;
+
+            const option = category.options[selectedIndex];
+
+            const value = option.value;
+
+            if(value === "custom"){
+
+                category.disabled = true;
+
+                const name = category.name;
+
+                category.name="hidden";
+
+                const customCategory = document.getElementById('id_hidden');
+                customCategory.type="text";
+                customCategory.classList.add("form-control", "my-0", "text-center");
+                customCategory.placeholder = "Create a new category";
+                customCategory.name=name;
+                customCategory.required=true;
+                customCategory.hidden = false;
+                customCategory.required = true;
+
+                category.parentNode.replaceChild(customCategory, category);
+            }
+        });
+    </script>
+{% endblock scripts %}

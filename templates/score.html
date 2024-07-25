@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock %}
+
+{% block title %} Result {% endblock %}
+
+{% block main %}
+
+    <div class="container col-9 d-flex border border-1 border-dark rounded shadow shadow-lg justify-content-center fixed-top py-5", style="margin-top: 150px; height:520px;">
+    <ul class="navbar-nav">
+        <li class="text-center mb-5 mt-1"><h1 class="display-1 h1 py-3 my-0">You scored: {{ score }}</h1></li>
+        <li class="text-center mt-4">
+            {% if personal_best is not None %}
+                <h5 class="display-6 h5 mb-3 py-3" style="font-size: 33px;">Your personal {% if format != "endless" and format != "aggregate" %}high score{% else %}best streak{% endif %} in {{ format|title }} mode is {{ personal_best }}{% if format != "endless" and format != "aggregate" %}%{% endif %}</h5>
+            {% else %}
+                <h5 class="display-6 h5 mb-3 py-3" style="font-size: 33px;">It is your new personal {% if format != "endless" and format != "aggregate" %}high score{% else %}best streak{% endif %} in {{ format|title }} mode</h5>
+            {% endif %}
+        </li>
+        <li class="text-center mt-2">
+            {% if overall_best is not None %}
+                <h5 class="display-6 h5 mb-5 py-3" style="font-size: 33px;">The overall {% if format != "endless" and format != "aggregate" %}high score{% else %}best streak{% endif %} in {{ format|title }} mode is {{ overall_best.1 }}{% if format != "endless" and format != "aggregate" %}%{% endif %}, by {{ overall_best.0 }} </h5>
+            {% else %}
+                <h5 class="display-6 h5 mb-5 py-3" style="font-size: 33px;">It is the new overall {% if format != "endless" and format != "aggregate" %}high score{% else %}best streak{% endif %} in {{ format|title }} mode</h5>
+            {% endif %}
+        </li>
+    </ul>
+
+
+    </div>
+
+    {% include 'footer.html' %}
+{% endblock %}

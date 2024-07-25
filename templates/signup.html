@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup{% endblock %}
+
+{% block main %}
+<div class="container-fluid d-flex col-12 justify-content-between p-1" style="height: 100vh; width: 100vw!important;">
+    <div class="col-6" id="signup div">
+        <div class="container-fluid d-flex justify-content-center align-items-center h-100" style="background-color: white; color:black;">
+                <ul class="navbar-nav">
+                    <li class="my-4">
+                       <div class="col-12 container-fluid p-0 d-flex justify-content-center">
+                            <form method="POST" class="shadow shadow-lg" id="signup form">
+                                {% csrf_token %}
+                                <fieldset class="form-group border border-2 border-dark px-5 rounded d-flex align-items-center justify-content-center" style="height:657px; width: 597px;">
+                                        <ul class="navbar-nav d-flex justify-content-center px-0">
+                                            <legend class="text-center mb-5" style="font-size: 27px; line-height: 30px; font-weight: 600; text-transform: uppercase; color:black;">Sign Up</legend>
+                                            {% for field in form %}
+                                                <l1 class="my-0" style="max-height: 80px;">
+                                                    <div class="form-floating my-0">
+                                                        {{ field }}
+                                                        <label for="{{ field.id }}">{{ field.label }}</label>
+                                                    </div>
+                                                    <br><br>
+                                                </l1>
+                                            {% endfor %}
+                                            <li class="mt-2 text-center"><input type="submit" class="btn btn-outline-dark" value="Submit"></li>
+                                        </ul>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </li>
+                    <li class="my-0 text-center">
+                        {% if errors is not None %}
+                            {% for key, error in errors.items %}
+                                {{ error }}
+                            {% endfor %}
+                        {% endif %}
+                    </li>
+                </ul>
+        </div>
+    </div>
+
+    <div class="col-6" id="login div" style="background-color: white; color:black;">
+        <div class="container-fluid h-100 d-flex justify-content-center align-items-center" style="background-color: black; color:white;">
+            <h1 class="text-center mx-4" style="word-break: break-word !important; white-space: normal !important;">
+                <a class="px-3 d-flex btn btn-lg btn-outline-light fixed-top justify-content-center align-items-center h-100 done-btn" data-toggle="tooltip" title="Home Page" data-bs-placement="top" style="width: 100px; height: 53px!important; color: white; margin-top: 33px; margin-right: 50px; margin-left: auto;" href="{% url 'quiz:index' %}" id="quit">
+                    <h5 class="my-0 mx-1">Home</h5>
+                </a>
+                <p class="mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="257" height="257" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
+                      <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5ZM9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8Zm1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Z"/>
+                      <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2ZM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96c.026-.163.04-.33.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1.006 1.006 0 0 1 1 12V4Z"/>
+                    </svg>
+                </p>
+                <p class="mb-3" style="font-size: 69px;">Already registered?</p>
+                <p class="mt-4" style="font-size:33px;"><a href="{% url 'quiz:login' %}" class="auth-redirect px-5 py-2 rounded" style="color:white; font-size:33px; text-decoration: underline;">You can log in here!</a></p>
+            </h1>
+        </div>
+    </div>
+</div>
+{% endblock %}

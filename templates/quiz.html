@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block title %} Standard Quiz {% endblock title %}
+
+{% block main %}
+
+    <div class="container my-4 py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="px-3 d-flex btn btn-lg btn-outline-dark justify-content-between align-items-center h-100" data-toggle="tooltip" title="Exit this quiz?" data-bs-placement="top" style="width: 110px; height: 63px!important;" href="{% url 'quiz:quiz' %}" id="quit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 14">
+                  <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+                  <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+                </svg> <h5 class="my-0">Quit?</h5>
+            </a>
+            {% if format == "timed" %}
+            <span class="h1 my-0 p-0 align-middle me-5 bg-light text-dark rounded" id="timer"></span>
+            {% endif %}
+            <div class="d-flex justify-content-center rounded-circle bg-light text-center align-items-center" style="width: 67px; height: 67px; border: 2px solid black" id="scoreContainer">
+                <h1 class="text-dark text-center m-0" id="score" style="word-break: break-word !important; white-space: normal !important;">{{ score }}</h1>
+            </div>
+        </div>
+
+            <div class="text-center mt-4 py-5 rounded">
+                <h4 class="h4 display-5 text-center" id="q">{{ q }}</h4>
+            </div>
+            <hr style="border: 2.3px solid black; color:black; opacity: 1;">
+            <form id="checkForm" method="POST">
+                {% csrf_token %}
+                <div class="row my-2 mx-0 p-5">
+                    {% for opt in opts %}
+                    <div class="col-sm-6 px-3 my-1">
+                        <div class="container d-flex justify-content-center my-3 px-0">
+                            <a class="navbar-brand ans-link rounded p-1" href="" id="link{{ forloop.counter }}"><h5 class="h5 display-6 text-center px-1" id="opt{{ forloop.counter }}" style="word-break: break-word !important; white-space: normal !important;">{{ opt }}</h5></a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+    </div>
+
+
+{% endblock main %}
+
+{% block scripts %}
+    <script defer>
+
+        var firstStart = Date.now()
+
+        if(!window.localStorage.getItem('start')){
+            window.localStorage.setItem('start', firstStart);
+        }
+
+        console.log(window.localStorage.getItem('start'));
+        {% if format == 'timed' %}
+            var idle_time = 7;
+        {% else %}
+            var idle_time = 30;
+        {% endif %}
+
+        {#document.getElementById('timer').innerHTML = idle_time;#}
+
+        function getEndTime(start,time_sec){
+            endTime = new Date(start + time_sec * 1000);
+
+            return endTime;
+        }
+
+        function timeTaken(start){
+            return Date.now()-start;
+        }
+
+
+
+        const form = document.getElementById("checkForm");
+
+        form.addEventListener('submit', function(event){
+            const check = document.createElement('input');
+            check.type='hidden';
+            check.name='check';
+            check.value="fetch = true";
+
+            form.appendChild(check);
+            event.preventDefault();
+
+            formdata = new FormData(form);
+
+            fetch('{% url 'quiz:quiz' %}',{
+                method: "POST",
+                body: formdata,
+            })
+                .then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.hasOwnProperty("over")){
+                        const over = document.createElement('input');
+                        over.type='hidden';
+                        over.name='over';
+                        over.value="over";
+
+                        if(window.localStorage.getItem('start')){
+                            window.localStorage.removeItem('start');
+                        }
+                        form.appendChild(over);
+                        form.submit();
+                    }
+                    else {
+                        document.getElementById("q").innerHTML = data.q;
+
+                        {% for opt in opts %}
+                            document.getElementById("opt{{ forloop.counter }}").innerHTML = data.opts[{{ forloop.counter0 }}]
+                        {% endfor %}
+
+                        firstStart = Date.now();
+                        window.localStorage.setItem('start', firstStart);
+                        {% if format == 'timed' %}
+                            document.getElementById('timer').innerHTML = "";
+                        {% endif %}
+                    }
+
+                    document.getElementById("score").innerHTML=data.score.toString();
+                })
+                .catch(err => {
+                    console.log(err.name);
+                    console.log(err.message);
+                }
+                )
+
+            this.removeEventListener('click', arguments.callee);
+
+        })
+
+        {% for opt in opts %}
+            const link{{ forloop.counter }} = document.getElementById("link{{ forloop.counter }}");
+
+            link{{ forloop.counter }}.addEventListener('click', function(event){
+                event.preventDefault();
+
+                const timeInput = document.createElement('input');
+                timeInput.type = 'hidden';
+                timeInput.name = 'time';
+                timeInput.value = timeTaken(firstStart);
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type='hidden';
+                hiddenInput.name='answer';
+                hiddenInput.value=document.getElementById("opt{{ forloop.counter }}").innerHTML;
+
+                form.appendChild(timeInput);
+                form.appendChild(hiddenInput);
+
+                const submitEvent = new Event('submit');
+                form.dispatchEvent(submitEvent)
+            });
+        {% endfor %}
+
+        document.getElementById('quit').addEventListener('click', function (event){
+            event.preventDefault();
+            isQuit = document.createElement('input');
+            isQuit.type = 'hidden';
+            isQuit.name = 'isQuit';
+            isQuit.value = 'isQuit';
+
+            if(window.localStorage.getItem('start')){
+                window.localStorage.removeItem('start');
+            }
+
+            form.appendChild(isQuit);
+            form.submit();
+            {#const submitEvent = new Event('submit');#}
+            {#form.dispatchEvent(submitEvent);#}
+        })
+
+        {% if format == "standard" or format == 'custom' %}
+        var check = setInterval(function(){
+            difference = getEndTime(firstStart, idle_time) - Date.now() + Number(String(firstStart).slice(-3));
+            console.log("discrep:",Number(String(firstStart).slice(-3)));
+            console.log("Start time:",firstStart);
+            console.log("End time:",Date.parse(getEndTime(firstStart, 5)));
+            console.log("Difference:",difference);
+
+            if(difference < 1){
+                const timeInput = document.createElement('input');
+                timeInput.type = 'hidden';
+                timeInput.name = 'time';
+                timeInput.value = timeTaken(firstStart);
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type='hidden';
+                hiddenInput.name='answer';
+                hiddenInput.value="time_run_out";
+
+                form.appendChild(timeInput);
+                form.appendChild(hiddenInput);
+
+                const submitEvent = new Event('submit');
+                form.dispatchEvent(submitEvent);
+            }
+        }, 1000)
+        {% elif format == "timed" %}
+            var check = setInterval(function() {
+                difference = getEndTime(Number(window.localStorage.getItem('start')), idle_time) - Date.now() + Number(String(firstStart).slice(-3));
+                console.log("discrep:", Number(String(firstStart).slice(-3)));
+                console.log("Start time:", firstStart);
+                console.log("End time:", Date.parse(getEndTime(firstStart, 5)));
+                console.log("Difference:", difference);
+
+
+                if (difference < 1) {
+                    const timeInput = document.createElement('input');
+                    timeInput.type = 'hidden';
+                    timeInput.name = 'time';
+                    timeInput.value = timeTaken(firstStart);
+
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'answer';
+                    hiddenInput.value = "time_run_out";
+
+                    form.appendChild(timeInput);
+                    form.appendChild(hiddenInput);
+
+                    const submitEvent = new Event('submit');
+                    form.dispatchEvent(submitEvent);
+                }
+                else{
+                document.getElementById('timer').innerHTML = Math.floor(difference/1000);
+                }
+        }, 1000)
+        {% endif %}
+
+    window.onbeforeunload = function(){
+        window.localStorage.removeItem('start');
+    }
+    </script>
+{% endblock scripts %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block title %} Custom quizzes {% endblock title %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock includes %}
+
+{% block main %}
+    <div class="container col-10 mt-5 py-5 px-0" xmlns="http://www.w3.org/1999/html">
+        <div class="container text-center align-items-center mt-4">
+            <h3 class="h3 text-center container">Check out these quizzes!</h3>
+        </div>
+
+            <form method="POST" id="crudForm">
+                {% csrf_token %}
+                <table class="table table-hover shadow-sm table-group-divider rounded table-borderless overflow-auto my-0">
+                    <thead class="">
+                        <tr style="height: 60px;" class="align-middle">
+                            <th scope="col" class="px-0 mx-3 text-center col-1"></th>
+                            <th scope="col" class="px-0 mx-3 text-center col-2">Uploader</th>
+                            <th scope="col" class="px-0 mx-3 text-center col-6">Quiz Title</th>
+                            <th scope="col" class="px-0 mx-3 text-center col-3">
+                               Try it out
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="container px-0 overflow-auto my-0" style="max-height: 400px;">
+                    <table class="table table-hover shadow-sm rounded table-borderless overflow-auto my-0" id="table">
+                        <tbody class="">
+
+                            {% if empty %}
+                                <tr class="align-middle" style="height: 55px;">
+                                    <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center" id="error1"></th>
+                                    <td class="px-0 mx-3 text-center col-2" id="error2"></td>
+                                    <td class="px-0 mx-3 text-center col-6" id="error3">There are no quizzes to check out currently!</td>
+                                    <td class="px-0 mx-3 text-center col-3" id="error4"></td>
+                                </tr>
+                            {% else %}
+                                    {% for quiz in quizzes %}
+                                        <tr class="align-middle" style="height: 55px;">
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center">{{ forloop.counter }}</th>
+                                            <td class="px-0 text-center col-2" id="col{{ forloop.counter }}">
+                                                <span class="px-0 text-center my-0" id="user{{ forloop.counter }}">{{ quiz.0.host.get_full_name }}</span>
+                                            </td>
+                                            <td class="px-0 text-center col-6" id="count{{ forloop.counter }}">{{ quiz.0.title }}</td>
+                                            <td class="px-0 text-center col-3">
+                                                <a href="#" class="btn btn-sm btn-outline-dark rounded-circle" data-toggle="tooltip" title="Try it" data-bs-placement="top" id="{{ quiz.0.id }}" style="width: 39px; height: 39px;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" fill="currentColor" class="bi bi-play-circle-fill" viewBox="1 0 20 16">
+                                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                            {% endif %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            <input type="submit" hidden>
+            </form>
+        <table class="table table-hover shadow-sm rounded table-borderless overflow-auto mt-0">
+            <tfoot class="">
+                <tr class="align-middle" style="height: 60px;">
+                    <th scope="row" class="px-0 mx-3 text-center col-1"></th>
+                    <td class="px-0 mx-3 text-center col-2"></td>
+                    <td class="px-0 mx-3 text-center col-6">
+                        <a href="{% url 'quiz:create' %}" class="btn btn-sm btn-dark text-light addbtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 19">
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg> Create your own quiz
+                        </a>
+                    </td>
+                    <td class="px-0 mx-3 text-center col-3"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+{% endblock main %}
+
+{% block scripts %}
+    <script defer>
+
+        const form = document.getElementById("crudForm");
+
+        copied_list = [];
+
+        {% for quiz in quizzes %}
+            const try_quiz{{ forloop.counter }} = document.getElementById("{{ quiz.0.id }}");
+
+            try_quiz{{ forloop.counter }}.addEventListener('click', function (event){
+                titleId = document.createElement('input');
+                titleId.type = 'hidden';
+                titleId.name = 'titleId';
+                titleId.value = {{ quiz.0.id }};
+                form.appendChild(titleId);
+                form.submit();
+            })
+
+        {% endfor %}
+    </script>
+    {% include 'footer.html' %}
+{% endblock scripts %}

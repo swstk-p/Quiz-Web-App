@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block title %} Manage your quizzes {% endblock title %}
+
+{% block includes %} {% include 'nav.html' %} {% endblock includes %}
+
+{% block main %}
+    <div class="container col-10 mt-5 py-5 px-0">
+        <div class="container text-center align-items-center mt-3">
+            <h3 class="h3 text-center container">Your quizzes</h3>
+        </div>
+
+            <form method="POST" id="crudForm">
+                {% csrf_token %}
+                <table class="table table-hover shadow-sm table-group-divider rounded table-borderless overflow-auto my-0">
+                    <thead class="">
+                        <tr style="height: 60px;" class="align-middle">
+                            <th scope="col" class="px-0 mx-3 text-center col-1"></th>
+                            <th scope="col" class="px-0 mx-3 text-center col-2">Quiz Title</th>
+                            <th scope="col" class="px-0 mx-3 text-center col-6">No. of questions</th>
+                            <th scope="col" class="px-0 mx-3 text-center col-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-wrench-adjustable" viewBox="0 0 16 16">
+                                  <path d="M16 4.5a4.492 4.492 0 0 1-1.703 3.526L13 5l2.959-1.11c.027.2.041.403.041.61Z"/>
+                                  <path d="M11.5 9c.653 0 1.273-.139 1.833-.39L12 5.5 11 3l3.826-1.53A4.5 4.5 0 0 0 7.29 6.092l-6.116 5.096a2.583 2.583 0 1 0 3.638 3.638L9.908 8.71A4.49 4.49 0 0 0 11.5 9Zm-1.292-4.361-.596.893.809-.27a.25.25 0 0 1 .287.377l-.596.893.809-.27.158.475-1.5.5a.25.25 0 0 1-.287-.376l.596-.893-.809.27a.25.25 0 0 1-.287-.377l.596-.893-.809.27-.158-.475 1.5-.5a.25.25 0 0 1 .287.376ZM3 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/>
+                                </svg>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+                <div class="container px-0 overflow-auto my-0" style="max-height: 400px;">
+                    <table class="table table-hover shadow-sm rounded table-borderless overflow-auto my-0" id="table">
+                        <tbody class="">
+
+                            {% if empty %}
+                                <tr class="align-middle" style="height: 55px;">
+                                    <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center" id="error1"></th>
+                                    <td class="px-0 mx-3 text-center col-2" id="error2"></td>
+                                    <td class="px-0 mx-3 text-center col-6" id="error3">You currently don't have any quizzes to manage</td>
+                                    <td class="px-0 mx-3 text-center col-3" id="error4"></td>
+                                </tr>
+                            {% else %}
+                                    {% for quiz in quizzes %}
+                                        <tr class="align-middle" style="height: 55px;">
+                                            <th scope="row" class="px-0 mx-3 text-center col-1 align-items-center">{{ forloop.counter }}</th>
+                                            <td class="px-0 text-center col-2" id="title{{ forloop.counter }}">
+                                                <span class="px-0 text-center my-0" id="quizTitle{{ forloop.counter }}">{{ quiz.0.title }}</span>
+                                            </td>
+                                            <td class="px-0 text-center col-6" id="count{{ forloop.counter }}">{{ quiz.1 }}</td>
+                                            <td class="px-0 text-center col-3">
+                                                <a href="" class="mx-4 btn btn-sm btn-outline-dark" data-toggle="tooltip" title="Rename" data-bs-placement="top" id="edit_name{{ forloop.counter }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 19">
+                                                      <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="#" class="mx-4 btn btn-sm btn-outline-dark" data-toggle="tooltip" title="Edit quiz" data-bs-placement="top" id="edit_quiz{{ forloop.counter }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 19">
+                                                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                                    </svg>
+                                                </a>
+                                                <a href="" class="mx-4 btn btn-sm btn-outline-dark" data-toggle="tooltip" title="Delete quiz" data-bs-placement="top" id="delete_quiz,{{ quiz.0.title }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 19">
+                                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                            {% endif %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            <input type="submit" hidden>
+            </form>
+        <table class="table table-hover shadow-sm rounded table-borderless overflow-auto mt-0">
+            <tfoot class="">
+                <tr class="align-middle" style="height: 60px;">
+                    <th scope="row" class="px-0 mx-3 text-center col-1"></th>
+                    <td class="px-0 mx-3 text-center col-2"></td>
+                    <td class="px-0 mx-3 text-center col-6">
+                        <a href="{% url 'quiz:create' %}" class="btn btn-sm btn-dark text-light addbtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 19">
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg> Create a new quiz
+                        </a>
+                    </td>
+                    <td class="px-0 mx-3 text-center col-3"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% include 'footer.html' %}
+{% endblock main %}
+
+{% block scripts %}
+    <script defer>
+
+    function calculateIndex(num){
+        index = num;
+                all_quizzes = {{ quizzes|length }};
+                if(index===1){
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+                }
+                else if(index===2 && shared.deleted.length===(all_quizzes-2)){
+                    index = num;
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                    }
+                    if(index!==2){
+                        index++;
+                    }
+                    while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+                }
+                else if(shared.deleted.includes(num)){
+                    index = num;
+
+                    if(shared.deleted===[1]){
+                        index+=1;
+                    }
+                    else if(shared.deleted === [1,2] || shared.deleted === [2,1]){
+                        index+=2;
+                    }
+                    else{
+
+                        for(i of shared.deleted){
+                            if(i < index){
+                                index++;
+                            }
+                        }
+
+                        while((document.getElementById("quizTitle"+index.toString())==null || document.getElementById("quizTitle"+(index-num).toString())!==null) && (shared.deleted.includes(index-num))){
+                            index++;
+                        }
+                    }
+
+                }
+                else{
+                    index = num;
+                    if(index < Math.min(...shared.deleted)){
+                        index = num;
+                    }
+                    else if(index > Math.max(...shared.deleted)){
+                        index+=shared.deleted.length;
+                    }
+                    else{
+                        for(i of shared.deleted){
+                            if(i < index){
+                                index++;
+                            }
+                        }
+
+                        while(document.getElementById("quizTitle"+index.toString())==null || ((shared.deleted.includes(index-num)) && document.getElementById("quizTitle"+(index-num).toString())!==null)){
+                            index++;
+                        }
+                    }
+                }
+
+                for(i=1; i<num; i++){
+                if(calculateIndex(i)===index){
+                    index++;
+                }
+            }
+                 while(document.getElementById("quizTitle"+index.toString())==null){
+                            index++;
+                        }
+
+            return index;
+    }
+
+        const form = document.getElementById("crudForm");
+
+        var shared={
+            originalQuizTitle: null,
+            oldTitle: null,
+            newTitle: null,
+            deleted:[],
+        }
+
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+
+            if(document.getElementById('newTitle')!=null){
+                newTitle = document.getElementById('newTitle');
+                shared.originalQuizTitle.innerHTML = newTitle.value;
+                shared.newTitle = newTitle.value;
+                newTitle.parentNode.replaceChild(shared.originalQuizTitle, newTitle);
+                newTitle.type = 'hidden';
+                newTitle.remove();
+
+
+
+             }
+            formdata = new FormData(form);
+
+            if(shared.oldTitle!=null){
+                formdata.append('oldTitle', shared.oldTitle);
+                formdata.append('newTitle', shared.newTitle);
+                shared.oldTitle = null;
+                shared.newTitle = null;
+            }
+
+            fetch('{% url 'quiz:manage' %}', {
+                method: "POST",
+                body: formdata,
+            })
+                .then(res => res.json())
+                .then(data => {})
+                .catch(err => {})
+        })
+
+        copied_list = [];
+
+        {% for quiz in quizzes %}
+            const edit_quiz{{ forloop.counter }} = document.getElementById("edit_quiz{{ forloop.counter }}");
+            const delete_quiz{{ forloop.counter }} = document.getElementById("delete_quiz,{{ quiz.0.title }}");
+
+
+
+            delete_quiz{{ forloop.counter }}.addEventListener('click', function(event){
+                event.preventDefault();
+
+
+                const isDelete = document.createElement('input');
+                isDelete.type="hidden";
+                isDelete.name="isDelete";
+                isDelete.value=delete_quiz{{ forloop.counter }}.id.split(",")[1];
+                shared.deleted.push(parseInt(edit_quiz{{ forloop.counter }}.id.slice(9)));
+
+                form.appendChild(isDelete);
+
+                const submitEvent = new Event('submit');
+                form.dispatchEvent(submitEvent);
+
+
+                {% setvar quizzes|length as quizzes_length %}
+
+                {{ quizzes_length }}
+
+                {% with forloop.counter as start %}
+                        {% for quiz in quizzes %}
+                            {% if forloop.counter >= start and not forloop.counter >= quizzes_length %}
+                                copied_list.push({{ forloop.counter }})
+                                copied_list=copied_list.sort(function(a,b) {return a-b});
+                                offset = copied_list.indexOf({{ forloop.counter }}) + 2;
+                                copyTo = {{ forloop.counter }} - offset + copied_list.length;
+                                if(copyTo < document.getElementById('table').rows.length-1){
+                                    copyFrom = copyTo+1;
+
+                                    to = document.getElementById('table').rows[copyTo].cells;
+                                    from = document.getElementById('table').rows[copyFrom].cells;
+                                    toLinks = to[3].getElementsByTagName("a");
+                                    fromLinks = from[3].getElementsByTagName("a");
+
+                                    to[1].innerHTML = from[1].innerHTML;
+                                    to[2].innerHTML = from[2].innerHTML;
+
+
+                                    for(i=0; i<toLinks.length; i++) {
+                                        if (!(fromLinks.length < 1)) {
+
+                                            toLinks[i].id = fromLinks[i].id;
+                                            to[1].id = from[1].id;
+                                            to[2].id = from[2].id;
+
+                                        }
+                                    }
+
+                                }
+                            {% endif %}
+                        {% endfor %}
+                {% endwith %}
+                document.getElementById('table').deleteRow(document.getElementById('table').rows.length - 1);
+                document.getElementById('table').rows.length -= 1;
+                copied_list.length = 0;
+
+                if(document.getElementById('table').rows.length<1){
+                    table = document.getElementById('table');
+                    row = table.insertRow(0);
+                    row.classList.add("align-middle", "table-hover");
+                    row.style.height = "55px";
+
+                    c1 = row.insertCell(0);
+                    c2 = row.insertCell(1);
+                    c3 = row.insertCell(2);
+                    c4 = row.insertCell(3);
+
+                    c1.classList.add("px-0", "mx-3", "text-center", "col-1", "align-items-center");
+                    c2.classList.add("px-0", "mx-3", "text-center", "col-2");
+                    c3.classList.add("px-0", "mx-3", "text-center", "col-6");
+                    c4.classList.add("px-0", "mx-3", "text-center", "col-3");
+
+
+                    c1.innerHTML = "";
+                    c2.innerHTML = "";
+                    c3.innerHTML = "You currently don't have any quizzes to manage";
+                    c4.innerHTML = "";
+
+                }
+            })
+        {% endfor %}
+
+        {% for quiz in quizzes %}
+            document.getElementById("edit_name{{ forloop.counter }}").addEventListener('click', function rename(event){
+
+                event.preventDefault();
+
+                index = calculateIndex({{ forloop.counter }});
+
+
+                quizTitle = document.getElementById("quizTitle"+index.toString());
+
+                    shared.oldTitle = quizTitle.innerHTML;
+
+                    newTitle = document.createElement('input');
+                    newTitle.type = 'text';
+                    newTitle.name = 'newTitle';
+                    newTitle.value = quizTitle.innerHTML;
+                    newTitle.style.textAlign = "center";
+                    newTitle.id = "newTitle";
+                    newTitle.required=true;
+                    newTitle.pattern = "^\\S+$";
+                    newTitle.title = "Please enter a title without an space";
+
+                    shared.originalQuizTitle = quizTitle;
+
+                    quizTitle.parentNode.replaceChild(newTitle, quizTitle);
+                    newTitle.focus();
+                    newTitle.select();
+             });
+        {% endfor %}
+
+    {% for quiz in quizzes %}
+        document.getElementById("edit_quiz{{ forloop.counter }}").addEventListener('click', function(event){
+            event.preventDefault();
+
+                index = calculateIndex({{ forloop.counter }});
+                quizTitle = document.getElementById("quizTitle"+index.toString());
+                document.getElementById("edit_quiz"+index.toString()).href = "";
+                lnk = '{% url 'quiz:edit' %}';
+                document.getElementById("edit_quiz"+index.toString()).href = lnk.slice(0,22) + quizTitle.innerHTML;
+
+                window.location.href = document.getElementById("edit_quiz"+index.toString()).href;
+        })
+    {% endfor %}
+
+
+    </script>
+{% endblock scripts %}
